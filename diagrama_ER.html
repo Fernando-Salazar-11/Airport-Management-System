@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Diagrama E-R — Aeropuerto</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; background: #f8f8f8; padding: 24px; }
+  h1 { font-size: 20px; color: #2C5F8A; margin-bottom: 4px; }
+  p  { font-size: 13px; color: #666; margin-bottom: 20px; }
+  #erd { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; overflow: auto; }
+</style>
+</head>
+<body>
+<h1>Diagrama E-R — Base de Datos Aeropuerto</h1>
+<p>Materia: Bases de Datos Avanzadas &nbsp;|&nbsp; Junio 2026</p>
+<div id="erd">
+<pre class="mermaid">
+erDiagram
+  AEROLINEAS {
+    int aerolinea_id PK
+    varchar nombre
+    char codigo_IATA
+    varchar pais_origen
+    date fecha_fundacion
+    varchar sitio_web
+    timestamp myLogUP
+  }
+  AERONAVES {
+    int aeronave_id PK
+    int aerolinea_id FK
+    varchar modelo
+    int capacidad_pasajeros
+    decimal capacidad_carga
+    year fecha_fabricacion
+    date ultimo_mantenimiento
+    enum estado
+    timestamp myLogUP
+  }
+  RUTAS {
+    int ruta_id PK
+    char aeropuerto_origen
+    char aeropuerto_destino
+    decimal distancia_km
+    int tiempo_estimado_min
+    timestamp myLogUP
+  }
+  VUELOS {
+    int vuelo_id PK
+    int aerolinea_id FK
+    int ruta_id FK
+    int aeronave_id FK
+    timestamp fecha_salida
+    timestamp fecha_llegada_estimada
+    timestamp fecha_llegada_real
+    varchar puerta_embarque
+    int asientos_disponibles
+    enum estado
+    timestamp myLogUP
+  }
+  PASAJEROS {
+    int pasajero_id PK
+    varchar pasaporte
+    varchar nombre
+    varchar apellido
+    date fecha_nacimiento
+    varchar nacionalidad
+    varchar telefono
+    varchar email
+    varchar programa_fidelidad
+    int vuelos_acumulados
+    timestamp myLogUP
+  }
+  TRIPULACION {
+    int empleado_id PK
+    int aerolinea_id FK
+    varchar licencia
+    varchar nombre
+    varchar apellido
+    enum puesto
+    date fecha_contratacion
+    decimal horas_vuelo
+    timestamp myLogUP
+  }
+  RESERVACIONES {
+    int reservacion_id PK
+    int vuelo_id FK
+    int pasajero_id FK
+    enum clase
+    varchar asiento
+    timestamp fecha_reservacion
+    enum estado
+    decimal precio
+    enum metodo_pago
+    timestamp myLogUP
+  }
+  TRIPULACION_VUELO {
+    int vuelo_id FK
+    int empleado_id FK
+    varchar rol
+    timestamp myLogUP
+  }
+  PAGOS {
+    int pago_id PK
+    int reservacion_id FK
+    decimal monto
+    enum metodo_pago
+    enum estado
+    timestamp fecha_pago
+    varchar referencia
+    timestamp myLogUP
+  }
+  NOTIFICACIONES {
+    int notificacion_id PK
+    int pasajero_id FK
+    int vuelo_id FK
+    enum tipo
+    varchar mensaje
+    varchar email_destino
+    tinyint enviada
+    timestamp fecha_creacion
+    timestamp myLogUP
+  }
+
+  AEROLINEAS ||--o{ AERONAVES : "opera"
+  AEROLINEAS ||--o{ VUELOS : "realiza"
+  AEROLINEAS ||--o{ TRIPULACION : "emplea"
+  RUTAS ||--o{ VUELOS : "define"
+  AERONAVES ||--o{ VUELOS : "asignada a"
+  VUELOS ||--o{ RESERVACIONES : "tiene"
+  VUELOS ||--o{ TRIPULACION_VUELO : "asigna"
+  VUELOS ||--o{ NOTIFICACIONES : "genera"
+  PASAJEROS ||--o{ RESERVACIONES : "realiza"
+  PASAJEROS ||--o{ NOTIFICACIONES : "recibe"
+  TRIPULACION ||--o{ TRIPULACION_VUELO : "participa"
+  RESERVACIONES ||--|| PAGOS : "paga"
+</pre>
+</div>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default', fontSize: 13 });
+</script>
+</body>
+</html>
